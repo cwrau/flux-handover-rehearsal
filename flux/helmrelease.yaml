@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: demo
+  namespace: rehearsal
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./chart
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: rehearsal
+        namespace: flux-system

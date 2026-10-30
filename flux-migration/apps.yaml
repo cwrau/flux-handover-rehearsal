@@ -1,0 +1,70 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  interval: 1m
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: rehearsal
+    namespace: flux-system
+  path: ./flux
+  patches:
+    - target:
+        kind: Deployment
+      patch: |
+        - op: add
+          path: /spec/replicas
+          value: 0
+    - target:
+        kind: StatefulSet
+      patch: |
+        - op: add
+          path: /spec/replicas
+          value: 0
+    - target:
+        kind: CronJob
+      patch: |
+        - op: add
+          path: /spec/suspend
+          value: true
+    - target:
+        kind: Job
+      patch: |
+        - op: add
+          path: /spec/suspend
+          value: true
+    - target:
+        kind: HelmRelease
+      patch: |
+        - op: add
+          path: /spec/postRenderers
+          value:
+            - kustomize:
+                patches:
+                  - target:
+                      kind: Deployment
+                    patch: |
+                      - op: add
+                        path: /spec/replicas
+                        value: 0
+                  - target:
+                      kind: StatefulSet
+                    patch: |
+                      - op: add
+                        path: /spec/replicas
+                        value: 0
+                  - target:
+                      kind: CronJob
+                    patch: |
+                      - op: add
+                        path: /spec/suspend
+                        value: true
+                  - target:
+                      kind: Job
+                    patch: |
+                      - op: add
+                        path: /spec/suspend
+                        value: true
